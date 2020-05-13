@@ -1,6 +1,6 @@
-var io = require('socket.io');
+const io = require('socket.io');
 //var express = require('express');
-var http = require('http');
+const http = require('http');
 //var app = express();
 //app.use(express.static(__dirname + '/'));
 
