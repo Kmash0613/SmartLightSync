@@ -5,16 +5,18 @@ var http = require('http');
 var app = express();
 app.use(express.static(__dirname + '/'));
 
-var server = http.createServer(app).listen(80);
-var io = io.listen(server);
 
-//http.createServer(
+
+http.createServer(
     //function (request, response) {
     // リクエストを受けると以下のレスポンスを送信する
     //response.writeHead(200, {'Content-Type': 'text/plain'}); //レスポンスヘッダーに書き込み
     //response.end('Hello World\n'); // レスポンスボディに書き込み＆レスポンス送信を完了する
 //}
-//).listen(process.env.PORT || 8080); //公開ポートで待ち受け
+).listen(process.env.PORT || 8080); //公開ポートで待ち受け
+
+//var server = http.createServer(app).listen(80);
+var io = io.listen(server);
 
 io.sockets.on("connection", function(socket) {
 
