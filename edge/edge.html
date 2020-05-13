@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>SMART LIGHT SYNC Demo Animation</title>
+    <!--Adobe Edge Runtime-->
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <script type="text/javascript" charset="utf-8" src="edge_includes/edge.5.0.1.min.js"></script>
+    <style>
+    .edgeLoad-EDGE-28183762 {
+        visibility: hidden;
+    }
+    </style>
+    <script>
+    AdobeEdge.loadComposition('edge', 'EDGE-28183762', {
+        scaleToFit: "both",
+        centerStage: "both",
+        minW: "0",
+        maxW: "undefined",
+        width: "800px",
+        height: "450px"
+    }, {
+        dom: []
+    }, {
+        dom: []
+    });
+    </script>
+    <!--Adobe Edge Runtime End-->
+    <style>
+    #Stage_GageInner {
+        margin: 2px;
+        height: 39px;
+        width: 0;
+        position: relative;
+    }
+    </style>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript">
+    gageTrigger = 0;
+    //必要シェイク回数
+    countLimit = 50;
+
+    //countMax=$('#Stage_GageInner').width();
+    countMax = 382;
+    countUp = 0;
+    preRGB = "";
+    clientRGB = [0, 0, 0, 0];
+    tmp_nowCh = 1; //
+    //グローバル変数
+    bal = 0; //バランスA&B
+    //dim=255;マスターディマー(廃止)
+    masterRGB = [0, 0, 0, 0]; //マスター[1ch,2c,...]=[R,G,B,Dimmer]
+
+    var s = io.connect(); //リモート
+    //var s = io.connect('http://localhost:3000'); //ローカル
+
+    //サーバから受け取るイベント
+    s.on("connect", function() {}); // 接続時
+    s.on("disconnect", function(client) {}); // 切断時
+    s.on("S_to_C_message", function(data) {
+        addMessage(data.value);
+    });
+    //ここから変数
+
+
+
+    //操作画面から送信
+    function sendMessage(c_1, c_2, c_3, c_4) {
+        var msg = new Array(4);
+        msg[0] = c_1;
+        var txt = $("#text_input").val(); //取得
+        msg[1] = txt;
+        msg[3] = c_4;
+        //msg[2] = c_3;
+        //msg="rgb("+c_1+","+c_2+","+c_3+")";
+        //var msg= new Array(3);
+        //msg[0] = c_1;
+        //msg[1] = c_2;
+        //msg[2] = c_3;
+        //var msg = $("#message").val(); //取得
+        //$("#message").val(""); //空白にする
+        s.emit("C_to_S_message", {
+            value: msg
+        }); //サーバへ送信
+    }
+
+
+    function sendText() {
+        var msg = new Array(3);
+        var txt = $("#text_form").val(); //取得
+        console.log(txt);
+        msg[1] = txt;
+
+        s.emit("C_to_S_message", {
+            value: msg
+        }); //サーバへ送信
+    }
+
+    function sendCount() {
+            var msg = new Array(3);
+            //var txt = $("#text").val(); //取得
+            //msg[1] = txt;
+            msg[2] = 1;
+            msg[0] = clientRGB;
+            s.emit("C_to_S_message", {
+                value: msg
+            }); //サーバへ送信
+        }
+        //操作画面から送信(対象に操作画面を含まない)
+    function sendBroadcast() {
+        var msg = $("#message").val(); //取得
+        $("#message").val(""); //空白にする
+        s.emit("C_to_S_broadcast", {
+            value: msg
+        }); // サーバへ送信
+    }
+
+    //他からイベントを受け取った時→クライアントからの接続要求に応じて現在の設定を送り返す
+    function addMessage(value, color, size, connect) {
+            var initial_flg = value[3];
+            if (initial_flg == "connect") {
+                sendMessage(masterRGB, 0, 0, 0);
+            }
+            //カウントアップ
+
+            if (countUp != countLimit && gageTrigger != 0) {
+                countUp = countUp + value[2];
+            }
+            var gageWidth = countMax * countUp / countLimit;
+            //console.log(gageWidth);
+            $('#Stage_GageInner').width(gageWidth);
+
+            //カウントアップ
+
+        }
+        //
+    masterRGB = new Array(4);
+    //文字列rgb(r,g,b)から配列[r,g,b]に
+    function cssToRgb(cssColor) {
+        var tmp_RGB = masterRGB;
+        tmp_RGB = cssColor.replace('rgb', "").replace('(', "").replace(')', "").replace(/ /g, "").split(',');
+        return tmp_RGB;
+    }
+
+
+    //最終的なプッシュ
+    function confirmRGB(setRGB) {
+        //masterRGBに値をセット
+        masterRGB = setRGB;
+        sendMessage(masterRGB, 0, 0, 0);
+        //changeBG('#ch_a', masterRGB);
+    }
+
+    function monitorGetter() {
+        var tmp_RGB = $('#Stage_monitor').css('background-color');
+        if (preRGB != tmp_RGB) {
+            preRGB = tmp_RGB;
+            var tmp_RGB = cssToRgb(tmp_RGB);
+            masterRGB = [tmp_RGB[0], tmp_RGB[1], tmp_RGB[2], 255]
+            console.log(masterRGB);
+            confirmRGB(masterRGB);
+
+        };
+    }
+    </script>
+
+</head>
+
+<body style="margin:0;padding:0;background:#000">
+    <div id="Stage" class="EDGE-28183762">
+    </div>
+</body>
+
+</html>

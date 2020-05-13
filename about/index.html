@@ -1,0 +1,143 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="shortcut icon" href="../img/favicon.ico" />
+    <link href="./css/style.css" type="text/css" rel="stylesheet" />
+    <title>SMART LIGHT SYNC</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <!--core pluguin-->
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <!--core pluguin-->
+
+    <script type="text/javascript">
+    int link_mode=0;
+    if(link_mode!=0){
+    var s = io.connect(); //リモート
+    //サーバから受け取るイベント
+    s.on("connect", function() {}); // 接続時
+    s.on("disconnect", function(client) {}); // 切断時
+    s.on("S_to_C_message", function(data) {
+        addMessage(data.value);
+    });
+    clientRGB = [0, 0, 0, 0];
+    tmp_nowCh = 1; //
+    //グローバル変数
+    bal = 0; //バランスA&B
+    masterRGB = [0, 0, 0, 0]; //マスター[1ch,2c,...]=[R,G,B,Dimmer]
+    function sendInitial() {
+        var ini_msg = "connect";
+        sendMessage(clientRGB, clientText, 0, ini_msg);
+    }
+    function addMessage(msg) {
+        clientRGB = msg[0];
+        dim = msg[0][3] / 255;
+        $("#msg_list").prepend("<p class='msg'>msg:" + msg + "</p>");
+        $(".sss").css({
+            "backgroundColor": 'rgba(' + msg[0][0] + ',' + msg[0][1] + ',' + msg[0][2] + ',' + dim + ')'
+        });
+        $(".sss_t").css({
+            "color": 'rgba(' + msg[0][0] + ',' + msg[0][1] + ',' + msg[0][2] + ',' + dim + ')'
+        });
+    }
+};
+    </script>
+    <!--SP用JS読み込み-->
+    <script src="./js_core/sp.js"></script>
+</head>
+
+<body>
+    <header>
+        <h1><img src="img/logo.png" height="116" width="760"></h1>
+    </header>
+    <section class="eyecatch sss">
+        <article>
+            <h2>スマホとLED照明で空間を彩る</h2>
+            <img src="img/image00.png" height="275" width="953">
+            <p>「SMART LIGHT SYNC」はLED舞台照明とスマートフォンの「色」を連動してコントロールすることができるウェブアプリケーションです。</p>
+            <img src="img/qr.jpg" height="176" width="176" id="qr" class="pc">
+            <h3 class="pc">あなたのスマートフォンをリンクしよう</h3>
+           <a class="btn mobile" href="../index.html">あなたのスマートフォンをリンクしよう</a>
+        </article>
+    </section>
+    <section>
+        <article>
+            <img src="img/image01.png" height="525" width="331" class="float_l">
+            <div class="description float_r">
+                <h3 class="sss_t">GUIコントローラから<br>
+コントロール</h3>
+                <p>タブレット端末やPCなどから、リアルタイムに制御することができます。
+                </p>
+                <a target="_blank" class="btn sss" href="../ctrl_ui.html">GUIコントローラー</a>
+            </div>
+        </article>
+    </section>
+    <section>
+        <article>
+            <img src="img/image02.png" class="float_r">
+            <div class="description float_l">
+                <h3 class="sss_t">WEBコンテンツから呼び出してコントロール</h3>
+                <p>Adobe Edge Animateなどで作成したアニメーションなど、WEBコンテンツからスマホ画面と照明を制御することできます。
+                </p>
+                <a target="_blank" class="btn sss" href="../edge/edge.html">デモアニメーション</a>
+                <p class="notice">※PCからのアクセスを推奨します。</p>
+            </div>
+        </article>
+    </section>
+    <section>
+        <article>
+            <img src="img/image03.png" class="float_l">
+            <div class="description float_r">
+                <h3 class="sss_t">スマートフォンからの<br>フィードバックを受け取る</h3>
+                <p>スマートフォンの加速度センサーなどを取得し、演出にフィードバックできます。
+                </p>
+
+            </div>
+        </article>
+    </section>
+    <section class="eyecatch sss">
+        <article>
+
+            <h3>技術・仕様</h3>
+
+        </article>
+    </section>
+    <section>
+        <article>
+            <img src="img/image04.png">
+            <a target="_blank" class="btn center sss" href="https://github.com/ShootaKumagai/SmartLightSync">GitHub</a>
+            <!--<a target="_blank" class="btn center sss" href="https://chrome.google.com/webstore/detail/smart-light-sync/jbeocgjijpbgminmpiobgjdbfheailpi">GoogleChomeApps</a>-->
+        </article>
+    </section>
+    <section class="eyecatch sss">
+        <article>
+
+            <h3>制作</h3>
+
+        </article>
+    </section>
+    <footer>
+        <article>
+            <img src="./img/prof.jpg" height="200" width="200" class="float_l">
+            <div class="float_r">
+                <h4>熊谷周太<a class="sns_btn sss" href="https://www.facebook.com/shoota.kumagai" target="_blank">facebook</a><a class="sns_btn sss" href="https://twitter.com/rozz_jack" target="_blank">twitter</a></h4>
+                <h5>デジタルハリウッド大学 杉山ゼミ</h5>
+                <p>マルチメディアクリエイターとしてグラフィック・映像・WEB・音楽など様々なコンテンツを制作。 多様なコンテンツ制作から得た多角的な視点をもって領域横断的な表現手法を用いることを得意とする。
+                </p>
+            </div>
+
+        </article>
+    </footer>
+    <script type="text/javascript">
+    $('.mobile').hide();
+if ((navigator.userAgent.indexOf('iPhone') > 0 && navigator.userAgent.indexOf('iPad') == -1) || navigator.userAgent.indexOf('iPod') > 0 || navigator.userAgent.indexOf('Android') > 0) {
+   $('.pc').hide();
+   $('.mobile').show();
+
+}
+</script>
+</body>
+
+</html>

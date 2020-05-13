@@ -1,0 +1,20 @@
+@charset "UTF-8";
+/* CSS Document */
+body{position:relative;padding:20px}
+*{color:#fff;margin:0;padding:0}
+.small{font-size:10px}
+body{background:#fff}
+#log_wrap{background:#272727;border-radius:3px;border:#fff dotted 1px;padding:10px;opacity:0.8;float:right}
+#log_wrap div{height:100px;overflow:auto;border-top:#fff dotted 1px;}
+#log{color:#fff;font-size:10px}
+
+#rawlog_wrap{background:#272727;border-radius:3px;border:#fff dotted 1px;padding:10px;opacity:0.8;float:right;margin-right:20px}
+#rawlog_wrap div{height:100px;overflow:auto;border-top:#fff dotted 1px;}
+#rawlog{color:#fff;font-size:10px}
+
+#screen{width:960px;height:540px;border:1px dotted #666;position:relative;margin:0 auto;background: linear-gradient(to bottom, #fff 0%,#DFDFDF 100%); overflow:hidden}
+
+.particle{background-size:contain;width:10px;height:10px;bottom:90px;position:absolute; blend-mode:screen;opacity:1;left:475px; background-repeat:none;
+}
+div#ctrl{position:relative;bottom:0;width:96%;padding:0 2%;margin-top:20px}
+#miku{width:300px;position:absolute;left:330px;bottom:0px;z-index:100}

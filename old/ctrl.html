@@ -1,0 +1,298 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>smartLive</title>
+
+  <script src="/socket.io/socket.io.js"></script> 
+  <!--core pluguin-->
+  <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r69/three.min.js"></script>
+  <script src="./js_core_plugin/jscolor/jscolor.js"></script>
+   <!--core pluguin-->
+  
+  <script type="text/javascript">
+
+ var s = io.connect(); //リモート
+  //var s = io.connect('http://localhost:3000'); //ローカル
+
+  //サーバから受け取るイベント
+  s.on("connect", function () {});  // 接続時
+  s.on("disconnect", function (client) {});  // 切断時
+  s.on("S_to_C_message", function (data) {
+    addMessage(data.value);
+  });
+//ここから変数
+
+
+//var msg=new Array[3];
+
+  //クライアントからイベント送信（イベント名は自由に設定できます）
+  function sendMessage(c_1,c_2,c_3,c_4) {
+    var msg= new Array(3);
+	msg[0] = c_1;
+var txt = $("#text_input").val(); //取得
+	msg[1] = txt;
+	msg[3]=c_4;
+//msg[2] = c_3;
+	//msg="rgb("+c_1+","+c_2+","+c_3+")";
+	//var msg= new Array(3);
+	//msg[0] = c_1;
+//msg[1] = c_2;
+//msg[2] = c_3;
+	//var msg = $("#message").val(); //取得
+    //$("#message").val(""); //空白にする
+    s.emit("C_to_S_message", {value:msg}); //サーバへ送信
+  }
+  
+  function sendText() {
+    var msg= new Array(3);
+	var txt = $("#text_input").val(); //取得
+	msg[1] = txt;
+   s.emit("C_to_S_message", {value:msg}); //サーバへ送信
+  }
+
+   
+
+  function sendBroadcast() {
+    var msg = $("#message").val(); //取得
+    $("#message").val(""); //空白にする
+    s.emit("C_to_S_broadcast", {value:msg}); // サーバへ送信
+  }
+
+  //jqueryでメッセージを追加
+  function addMessage (value,color,size) {
+	  var comp=value
+    var msg = comp//.replace( /[!@$%<>'"&|]/g, '' ); //タグ記号とかいくつか削除
+	//var t1=comp[1].replace( /[!@$%<>'"&|]/g, '' ); //タグ記号とかいくつか削除
+    //ログの書き出し
+	//$("#msg_list").prepend("<p class='msg'>text:" + t1+ "</p>");
+	$("#msg_list").prepend("<p class='msg'>msg:" + msg+ "</p>");
+	$("#sp_bg,#sc_bg").css({"backgroundColor":''+msg});
+	//$("#scr_1").css({"opacity":msg[0]});
+	//$("#scr_2").css({"opacity":msg[1]})
+	//$("#scr_3").css({"opacity":msg[2]})
+  }    
+
+
+
+
+  </script>
+   <script type="text/javascript">
+   
+   // JavaScript Document
+{
+	var m=null;
+	var inputs=null;
+	var input=null;
+	var input_device=0;
+	var input_menu_id=null;
+	
+//Midi API 判定
+	//function runTest(){navigator.requestMIDIAccess().then( success, failure );}
+	function success(midiAccess)
+	{
+		m=midiAccess;
+		inputs=m.inputs();
+		setInputDeviceSelect();
+	}
+	function failure(error){alert( "NG" )}
+//インプットデバイス	
+	function setInputMenuID(parts){
+		input_menu_id = parts;
+	}
+	function setInputDeviceSelect(){
+		var i=0;
+		if(m!=null){
+			if(inputs.length>0){
+				for(i=0; i<inputs.length; i++)
+					input_menu_id.options[i+1] = new Option(inputs[i].name, i+1);
+			}
+		} 
+	}
+
+	function inputDeviceSelect(item){
+		input_device = item.options[item.selectedIndex].value-1;
+		if(input_device==-1) input_device=0;
+		input= inputs[input_device];			
+		input.onmidimessage = handleMIDIMessage1; 
+	}
+
+	
+//イベント処理
+//function raw_event(){
+	
+//	var raw_str ="<tr><td>" +event.data[1]+ "</td><td>|</td><td>" +event.data[2]+ " </td><td>|</td><td>" +event.data[0] +"</td></tr>\n";
+//		$('table#rawlog').prepend(raw_str)
+	
+//	}
+	
+function change_bg(){
+	if(event.data[1]==0)
+	{ch_1=parseInt(event.data[2])/127*100+"%";
+	}
+	if(event.data[1]==1)
+	{ch_2=parseInt(event.data[2])/127*100+"%";}
+	if(event.data[1]==2)
+	{ch_3=parseInt(event.data[2])/127*100+"%";}
+	sendMessage(ch_1,ch_2,ch_3,serial);
+	$('body').css({"backgroundColor":"rgb("+ch_r+","+ch_g+","+ch_b+")"})
+	//
+	//var str2 ="<tr><td>" + ch_r+ "</td><td>|</td><td>"+ch_g+"</td><td>|</td><td>"+ch_b+"</td></tr>\n";
+	//$('table#log').prepend(str2);
+	}
+	function handleMIDIMessage1( event ) {
+		//
+		//raw_event()
+		change_bg()
+		//ノートオンオフ判定
+		
+		
+		
+			//
+		
+
+		
+	}
+}
+
+function done(){$('#pre').fadeOut()}
+
+//カラーパレット変化
+function chgColorPalletA(colorCode){
+$('.pallet').eq(0).css({backgroundColor:'#'+colorCode});
+}
+function chgColorPalletB(colorCode){
+$('.pallet').eq(1).css({backgroundColor:'#'+colorCode});
+}
+function chgColorPalletC(colorCode){
+$('.pallet').eq(2).css({backgroundColor:'#'+colorCode});
+}
+function chgColorPalletD(colorCode){
+$('.pallet').eq(3).css({backgroundColor:'#'+colorCode});
+}
+function chgColorPalletE(colorCode){
+$('.pallet').eq(4).css({backgroundColor:'#'+colorCode});
+}
+
+
+$(document).ready(function(e) {
+	//draw();
+  $('.pallet').click(function(){
+	bgcolor=$(this).css('background-color');
+	sendMessage(bgcolor);
+	
+});
+});
+
+
+
+
+
+
+   
+   </script>
+  <style>
+    *{
+      /*font-size:30px;*/
+      margin:0;
+      padding:0;
+    }
+	body{color:#fff;background:#1c1c1c;padding:30px;}
+	p.msg{font-size:10px;line-height:1.2}
+p.noti{font-size:10px;color:#f80;margin:10px;}
+	
+	.monitor{float:right;width:20%;}
+	#monitor_sp{width:160px;height:284px;position:relative;}
+	#monitor_sp canvas{height:100%;width:100%;position:absolute;top:0px;left:0px;}
+	#monitor_sc{width:320px;height:180px;position:relative;}
+	#sp_bg,#sc_bg{height:100%;width:100%;position:absolute;top:0px;left:0px;}
+	#scr_1{background:#333}
+	.pallet{width:100px;height:100px;border-radius:50px;border:1px solid #333;background:rgb(0,0,0);}
+	#color_bank_wrap section{display:inline-block;}
+	/*#scr_2{background:#0f0}
+	#scr_3{background:#00f}*/
+	.scr{position:absolute;top:0;left:0;width:100%;height:100%}
+	.control_pannel{border-top:1px dotted #ccc;float:left;width:80%;}
+	.color{width:100px;}
+	/*568px*/
+	
+		h6{text-align:center;margin-top:30%}
+	
+	
+
+	
+  </style>
+</head>
+<body>
+
+<div class="monitor" style="display:none">
+<h6>Screen</h6>
+<div id="monitor_sc">
+<div id="sc_bg"></div>
+<canvas id="canvas_sc1"></canvas>
+<canvas id="canvas_sc2"></canvas>
+</div>
+<h6>Mobile</h6>
+<div id="monitor_sp">
+<div id="sp_bg"></div>
+<canvas id="canvas_sp1"></canvas>
+<canvas id="canvas_sp2"></canvas>
+</div>
+</div>
+
+
+<div class="control_pannel">
+<h1>SmartLiveDirectionSystme ControlPannel</h1>
+<div id="color_bank_wrap">
+<section>
+<div class="pallet" ></div>
+<input class="color" value="000000" onchange="chgColorPalletA(this.color);">
+</section>
+<section>
+<div class="pallet"></div>
+<input class="color" value="000000" onchange="chgColorPalletB(this.color);">
+</section>
+<section>
+<div class="pallet" ></div>
+<input class="color" value="000000" onchange="chgColorPalletC(this.color);">
+</section>
+<section>
+<div class="pallet" ></div>
+<input class="color" value="000000" onchange="chgColorPalletD(this.color);">
+</section>
+<section>
+<div class="pallet" ></div>	
+<input class="color" value="000000" onchange="chgColorPalletE(this.color);">
+</section>
+</div>
+<p class="noti">▲カラーコードクリックでカラーピック、それぞれの円形パレットをクリックして切り替え</p>
+<form method="post">
+<p>
+テキスト：<input type="text" name="text_input" size="40" maxlength="20" id="text_input" value="Let's SHAKE!">
+</p>
+<p>
+<input type="button" value="送信する" onClick="sendText()">
+</p>
+</form>
+<p class="noti">▲送りたいテキストを入力して送信</p>
+<!--<p>INPUT：</p>
+	<form name="input_device_select">
+		<select name="ids" onChange="inputDeviceSelect(this);">
+			<option value="0">No Device</option>
+		</select>
+	</form>
+<script>setInputMenuID(document.input_device_select.ids);</script>
+<p id="result"></p>-->
+  <div id="msg_list" style="height:100px; overflow:auto;"></div>
+ 
+  <!--<form action="" method="post" onsubmit="return false;">
+    <input type="text" class="text" style="width:95%; padding:10px" id="message"/>
+    <input type="submit" class="button" style="padding:10px" onclick="sendText();" value="送信" />
+    <!--<input type="submit" class="button" style="padding:10px" onclick="sendBroadcast();" value="自分以外に送信" />-->
+  <!--</form>-->
+</div>
+<script type="text/javascript" src="http://jsdo.it/lib/tmlib.js-0.1.4/js"></script>
+ <script src="./js_core/common_func.js"></script>
+</body>
+</html>

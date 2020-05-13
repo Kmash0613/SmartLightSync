@@ -1,0 +1,170 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,minimal-ui" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>SMART LIGHT SYNC</title>
+    <link rel="shortcut icon" href="./img/favicon.ico" />
+    <script src="/socket.io/socket.io.js"></script>
+    <!--core pluguin-->
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <!--<script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r69/three.min.js"></script>-->
+    <script src="./js_core_plugin/gShake.js"></script>
+    <!--core pluguin-->
+
+    <script type="text/javascript">
+    var s = io.connect(); //リモート
+    //var s = io.connect('http://localhost:3000'); //ローカル
+    var count_up = 0;
+    //サーバから受け取るイベント
+    s.on("connect", function() {}); // 接続時
+    s.on("disconnect", function(client) {}); // 切断時
+    s.on("S_to_C_message", function(data) {
+        addMessage(data.value);
+    });
+    //ここから変数
+
+    clientText = "";
+    clientRGB = [0, 0, 0, 0];
+    tmp_nowCh = 1; //
+    //グローバル変数
+    bal = 0; //バランスA&B
+    //dim=255;マスターディマー(廃止)
+    masterRGB = [0, 0, 0, 0]; //マスター[1ch,2c,...]=[R,G,B,Dimmer]
+
+    //var msg=new Array[3];
+
+    //クライアントからイベント送信（イベント名は自由に設定できます）
+    function sendMessage(c_1, c_2, c_3, c_4) {
+
+
+        var msg = new Array(4);
+        msg[0] = c_1;
+        msg[1] = c_2;
+        msg[2] = c_3;
+        msg[3] = c_4;
+        console.log(msg[0])
+        console.log(msg[3])
+            //var msg = $("#message").val(); //取得
+            //$("#message").val(""); //空白にする
+        s.emit("C_to_S_message", {
+            value: msg
+        }); //サーバへ送信
+    }
+
+    function sendText() {
+        //var txt=t1;
+        //var msg= new Array(3);
+        //msg[0] = c_1;
+        //msg[1] = c_2;
+        //msg[2] = c_3;
+
+        //var txt = $("#message").val(); //取得
+        //msg[1] =txt;
+        //$("#message").val(""); //空白にする
+        // s.emit("C_to_S_message", {value:msg[1]}); //サーバへ送信
+    }
+
+    function sendCount() {
+        var msg = new Array(3);
+        //var txt = $("#text").val(); //取得
+        //msg[1] = txt;
+        msg[2] = 1;
+        msg[0] = clientRGB;
+        s.emit("C_to_S_message", {
+            value: msg
+        }); //サーバへ送信
+    }
+
+    function sendInitial() {
+
+        var ini_msg = "connect";
+        sendMessage(clientRGB, clientText, 0, ini_msg);
+
+    }
+
+    function sendBroadcast() {
+        var msg = $("#message").val(); //取得
+        $("#message").val(""); //空白にする
+        s.emit("C_to_S_broadcast", {
+            value: msg
+        }); // サーバへ送信
+    }
+
+    function addMessage(msg) {
+            clientRGB = msg[0]
+            dim = msg[0][3] / 255;
+            $("#msg_list").prepend("<p class='msg'>msg:" + msg + "</p>");
+            $("#sp_bg,#sc_bg").css({
+                "backgroundColor": 'rgba(' + msg[0][0] + ',' + msg[0][1] + ',' + msg[0][2] + ',' + dim + ')'
+            });
+
+
+            count_up = count_up + msg[2];
+
+
+            var t_count_up = String(count_up);
+            console.log(t_count_up);
+            $("#text2").empty().append(t_count_up);
+
+
+
+            function change_bg() {
+                if (event.data[1] == 0) {
+                    ch_1 = parseInt(event.data[2]) / 127 * 100 + "%";
+                }
+                if (event.data[1] == 1) {
+                    ch_2 = parseInt(event.data[2]) / 127 * 100 + "%";
+                }
+                if (event.data[1] == 2) {
+                    ch_3 = parseInt(event.data[2]) / 127 * 100 + "%";
+                }
+                sendMessage(ch_1, ch_2, ch_3);
+                $('body').css({
+                    "backgroundColor": "rgb(" + ch_r + "," + ch_g + "," + ch_b + ")"
+                })
+
+            }
+
+        }
+        // スクロールを抑止する関数
+    function preventScroll(event) {
+        event.preventDefault();
+    }
+
+    // タッチイベントの初期化
+    document.addEventListener("touchstart", preventScroll, false);
+    document.addEventListener("touchmove", preventScroll, false);
+    document.addEventListener("touchend", preventScroll, false);
+    // ジェスチャーイベントの初期化
+    document.addEventListener("gesturestart", preventScroll, false);
+    document.addEventListener("gesturechange", preventScroll, false);
+    document.addEventListener("gestureend", preventScroll, false);
+    </script>
+    <!--SP用JS読み込み-->
+    <script src="./js_core/sp.js"></script>
+    <link rel="stylesheet" type="text/css" href="./css/sp.css">
+</head>
+
+<body>
+    <p id="info">
+        <div id="monitor_sp">
+            <div id="sp_bg"></div>
+            <canvas id="canvas_sp1"></canvas>
+            <canvas id="canvas_sp2"></canvas>
+            <div id="text"></div>
+            <div id="text2"></div>
+        </div>
+        <ul id="debug_window"></ul>
+
+        <div id="pre">
+            <h6>CONNECTING</h6>
+        </div>
+        <!--<script type="text/javascript" src="http://jsdo.it/lib/tmlib.js-0.1.4/js"></script>
+        <script src="./js_core/common_func.js"></script>-->
+</body>
+
+</html>

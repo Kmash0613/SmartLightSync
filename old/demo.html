@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>無題ドキュメント</title>
+<style>
+	#tri{display:block;
+	 animation: rotate 3s; 
+  animation-iteration-count: infinite;
+  -webkit-animation: rotate 3s; /* Safari & Chrome */
+  -webkit-animation-iteration-count:  infinite;
+    -webkit-animation-timing-function: linear;
+
+	}
+	
+	@keyframes rotate { 
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); } 
+}
+@-webkit-keyframes rotate { /*Safari & Chrome */
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); } 
+} 
+</style>
+</head>
+
+<body style="background:#333">
+<img src="http://xn--eckpi8a2b0m0b8k.com/smart_live/tri.png" width="240" id="tri">
+</body>
+</html>

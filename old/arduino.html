@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+ </head>
+ <body>
+ 
+ <script>
+//arduino モジュールが備わっているかを検査する
+if (document.arduino) {
+    var arduino = document.arduino;
+    //arduino をオープン。引数はデバイスポートです。
+    arduino.open("/dev/tty.usbmodem1411");
+    //13番ピンを出力に設定 (true: OUTPUT, false: INPUT)
+    //arduino.pinMode(0, true);
+    //13番ピンに出力 min:0 - max:255
+    
+ //ledvalue=0;
+    function led(){
+    	
+    arduino.digitalWrite(0, "1c255w");
+    }
+
+    led();
+}
+ </script>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200px, user-scalable=no">
+    <title>SMART LIGHT SYNC CONTROLLER</title>
+    <link rel="shortcut icon" href="./img/favicon.ico" />
+    <link type="text/css" rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/cupertino/jquery-ui.min.css" />
+    <link rel="stylesheet" type="text/css" href="./css/ctrl.css">
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript">
+    //$(window).bind("resize", function(){
+    //    $("html").css( "zoom" , $(window).width() / 1200 );
+    //  }).trigger("resize");
+    </script>
+    <script src="https://code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
+    <script src="./jquery_modules/jquery.ui.touch-punch.min.js"></script>
+    <script src="./js_core_plugin/jscolor/jscolor.js"></script>
+
+    <script type="text/javascript">
+    var s = io.connect(); //リモート
+    //var s = io.connect('http://localhost:3000'); //ローカル
+
+    //サーバから受け取るイベント
+    s.on("connect", function() {}); // 接続時
+    s.on("disconnect", function(client) {}); // 切断時
+    s.on("S_to_C_message", function(data) {
+        addMessage(data.value);
+    });
+    //ここから変数
+
+
+    //var msg=new Array[3];
+
+    //操作画面から送信
+    function sendMessage(c_1, c_2, c_3, c_4) {
+        var msg = new Array(4);
+        msg[0] = c_1;
+        var txt = $("#text_input").val(); //取得
+        msg[1] = txt;
+        msg[3] = c_4;
+        //msg[2] = c_3;
+        //msg="rgb("+c_1+","+c_2+","+c_3+")";
+        //var msg= new Array(3);
+        //msg[0] = c_1;
+        //msg[1] = c_2;
+        //msg[2] = c_3;
+        //var msg = $("#message").val(); //取得
+        //$("#message").val(""); //空白にする
+        s.emit("C_to_S_message", {
+            value: msg
+        }); //サーバへ送信
+    }
+
+
+    function sendText() {
+        var msg = new Array(3);
+        var txt = $("#text_form").val(); //取得
+        console.log(txt);
+        msg[1] = txt;
+
+        s.emit("C_to_S_message", {
+            value: msg
+        }); //サーバへ送信
+    }
+
+
+    //操作画面から送信(対象に操作画面を含まない)
+    function sendBroadcast() {
+        var msg = $("#message").val(); //取得
+        $("#message").val(""); //空白にする
+        s.emit("C_to_S_broadcast", {
+            value: msg
+        }); // サーバへ送信
+    }
+
+    //他からイベントを受け取った時→クライアントからの接続要求に応じて現在の設定を送り返す
+    function addMessage(value, color, size, connect) {
+        var initial_flg = value[3];
+        if (initial_flg == "connect") {
+            sendMessage(masterRGB, 0, 0, 0);
+        }
+    }
+    document.ontouchmove = function(event) {
+        event.preventDefault();
+    }
+    </script>
+    <script src="./js_core/ui_core.js"></script>
+
+
+</head>
+
+<body id="ctrl">
+    <div id="wrap">
+        <div id="main">
+            <img id="logo" src="img/ui/logo.png">
+            <section id="master">
+                <div id="monitor">
+                    <div id="ch_a"></div>
+                    <div id="ch_b"></div>
+                </div>
+                <div id="master_fader">
+
+                    <div id="master_screen_slider"></div>
+                    <div id="master_center">
+                        <h6 class="float_l" style="opacity:0">SCREEN<br>MASTER</h6>
+                        <h6 class="float_r">LED<br>MASTER</h6>
+                        <div class="btn_group float_l" style="opacity:0">
+                            <input type="submit" class="btn_submit w_out" value="W OUT"></input>
+                            <input type="submit" class="btn_submit b_out" value="B OUT"></input>
+                        </diV>
+                        <div class="btn_group float_r">
+                            <input type="submit" class="btn_submit w_out" value="MAX" id="led_wout"></input>
+                            <input type="submit" class="btn_submit b_out" value="MIN" id="led_bout"></input>
+                        </diV>
+                    </div>
+                    <div id="master_light_slider"></div>
+                </div>
+            </section>
+            <section id="color_theme">
+                <div class="col_l">
+                    <div class="pallet"></div>
+                </div>
+
+                <div class="col_m">
+                    <input type="submit" class="btn_submit switch" value="SWITCH A⇄B"></input>
+                    <div id="color_slider"></div>
+
+                </div>
+
+                <div class="col_r">
+                    <div class="pallet"></div>
+                </div>
+                <!--1スライダーを表示する領域-->
+                <h6>COLOR THEME</h6>
+            </section>
+            <section id="video">
+                <h6>COLOR THEME</h6>
+                <div class="col_l">
+                    <div class="pallet" id="color_ch_a"></div>
+                    <input type="submit" class="btn_submit set" value="▲" id="color_ch_a_set"></input>
+                </div>
+
+                <div class="col_m">
+                    <input type="submit" class="btn_submit switch" value="SWITCH A⇄B"></input>
+                    <div id="video_slider"></div>
+
+                </div>
+
+                <div class="col_r">
+                    <div class="pallet" id="color_ch_b"></div>
+                    <input type="submit" class="btn_submit set" value="▲" id="color_ch_b_set"></input>
+                </div>
+                <!--1スライダーを表示する領域-->
+                <div class="sub_pallet">
+                    <div class="sub_pallet_wrap">
+                        <input class="color" readonly="readonly">
+                        <input class="color" readonly="readonly">
+                        <input class="color" readonly="readonly">
+                        <input class="color" readonly="readonly">
+                        <input class="color" readonly="readonly">
+                        <input class="color" readonly="readonly">
+
+                        <input class="color" readonly="readonly">
+                        <input class="color" readonly="readonly">
+                        <input class="color" readonly="readonly">
+                        <input class="color" readonly="readonly">
+                        <input class="color" readonly="readonly">
+                        <input class="color" readonly="readonly">
+
+
+                    </div>
+            </section>
+
+            <section id="text">
+                <h6>TEXT</h6>
+                <input type="text" name="text" class="text_form" id="text_form" value="welcome">
+
+                <input type="button" class="btn_submit" value="SEND" id="text_send" onClick="sendText()">
+            </section>
+
+
+            </div>
+        </div>
+
+</body>
+
+</html>

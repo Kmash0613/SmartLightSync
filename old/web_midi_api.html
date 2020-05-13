@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>WebMidiApi-to-CSS-demo</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+<style>svg{margin:0 auto}</style>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript" src="easing.js"></script>
+
+<script>
+//ランダム生成
+var randobet = function(n, b) {
+	b = b || '';
+	var a = 'abcdefghijklmnopqrstuvwxyz'
+		+ 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+		+ b;
+	a = a.split('');
+	var s = '';
+	for (var i = 0; i < n; i++) {
+    	s += a[Math.floor(Math.random() * a.length)];
+	}
+	return s;
+};
+
+function bar(){}
+
+function particle(velocity,bg,posit){
+	var rand=randobet(10);
+	pos_y=90+520*velocity;
+	pos_x=posit;
+	size_x=100*velocity
+	size_y=100*velocity
+	//window.alert(pos_x)
+$('#mouth').animate({height:'0%'});
+	$('div#screen').append('<div class="particle" id="'+rand+'"></circle>');
+	$('#'+rand).css({backgroundImage:'url(./svg/'+bg+'.svg)',left:pos_x+'%'}).animate({bottom:pos_y+'px',width:size_x+'px',height:size_y+'px',left:pos_x+'%',opacity:'0'},1000,'linear'
+	)
+	}
+</script>
+<script type="text/javascript" src="midi.js"></script>
+
+</head>
+
+<body style="background:#000">
+
+<script>
+runTest()</script>
+<!--	------------------------------------------------------------------ -->
+<form>
+<input type="button" value="Timer" onClick="color('#ff8000')">
+</form>
+<h1 onClick="setTimeout('run_animat',3000)">MIDI-CSS demo</h1>
+<div id="screen">
+	<div id="dummy"></div>
+	
+</div>
+<div id="ctrl">
+	<div id="log_wrap">
+		<p>Event log</p>
+		<p class="small">Note | Velocity(0-1.0) | Event</p>
+		<div>
+			<table id="log" ></table>
+		</div>
+	</div>
+    <div id="rawlog_wrap">
+		<p>RAW Event log</p>
+		<p class="small">Note | Velocity| Event</p>
+		<div>
+			<table id="rawlog" ></table>
+		</div>
+	</div>
+	<p>INPUT：</p>
+	<form name="input_device_select">
+		<select name="ids" onChange="inputDeviceSelect(this);">
+			<option value="0">No Device</option>
+		</select>
+	</form>
+<script>setInputMenuID(document.input_device_select.ids);</script>
+</body>
+</html>
